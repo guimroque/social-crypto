@@ -1,0 +1,15 @@
+{
+  "name": "social-wallet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "crypto": "ts-node src/main.ts"
+  },
+  "author": "Guilherme Roque",
+  "devDependencies": {
+    "@types/node": "^20.4.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

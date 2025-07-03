@@ -10,10 +10,24 @@ export class CryptoUtils {
    * @returns CryptoKeyPair containing the private and public keys.
    */
   static async generateKeyPair(): Promise<CryptoKeyPair> {
-    return subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, [
-      "sign",
-      "verify",
-    ]);
+    return await subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" },
+      true,
+      ["sign", "verify"]
+    );
+  }
+
+  /**
+   * Exports the public key from a CryptoKeyPair as a hexadecimal string.
+   * The public key is hashed using SHA-256 to create a unique identifier.
+   * @param pair The CryptoKeyPair containing the public key.
+   * @returns Hexadecimal string of the public key hash.
+   */
+  static async getPublicKeyFromPair(publicKey: CryptoKey): Promise<string> {
+    const key = await subtle.exportKey("spki", publicKey);
+    const digest = await subtle.digest("SHA-256", key);
+
+    return `0x${Buffer.from(digest).toString("hex")}`;
   }
 
   /**

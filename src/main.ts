@@ -1,7 +1,11 @@
 // import { BakoProvider, Vault } from "bakosafe";
 // import { Provider } from "fuels";
 
-import { validateEncryptKey, validateKeyPair } from "./mpc-validations";
+import {
+  validateEncryptKey,
+  validateKeyPair,
+  validateSocialWallet,
+} from "./mpc-validations";
 
 // export interface SocialWallet {
 //   vault: Vault | null;
@@ -13,16 +17,10 @@ import { validateEncryptKey, validateKeyPair } from "./mpc-validations";
 //   signMessage(message: string): Promise<string>;
 // }
 
-// export interface Store {
-//   db: Record<string, any>;
-
-//   save(key: string, value: any): void;
-//   get(key: string): any | null;
-// }
-
 const main = async () => {
   await validateKeyPair();
   await validateEncryptKey();
+  await validateSocialWallet();
 };
 
 main();

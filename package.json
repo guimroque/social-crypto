@@ -11,5 +11,8 @@
     "@types/node": "^20.4.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "bakosafe": "^0.1.9"
   }
 }

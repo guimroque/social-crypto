@@ -3,6 +3,7 @@ import { webcrypto } from "crypto";
 const { subtle } = webcrypto;
 
 import { CryptoUtils } from "./crypto";
+import { Wallet } from "./social-wallet";
 
 const MESSAGE = "hello message!";
 const PIN = "123456";
@@ -55,7 +56,6 @@ export const validateEncryptKey = async () => {
   const signature = await CryptoUtils.signMessage(MESSAGE, decrypted);
 
   assert(signature !== undefined);
-
   const rec = await CryptoUtils.recoverAndVerify(
     MESSAGE,
     signature,
@@ -64,4 +64,27 @@ export const validateEncryptKey = async () => {
 
   assert(rec === true);
   console.log("✅ [ENCRYPTION_KEY]");
+};
+
+export const validateSocialWallet = async () => {
+  const w = await Wallet.create(PIN);
+
+  assert(w.publicKey !== undefined);
+  assert(w.hardwareRef !== undefined);
+
+  const wAux = await Wallet.load(PIN, w.hardwareRef);
+
+  assert(wAux.publicKeyB256 === w.publicKeyB256);
+  assert(wAux.hardwareRef === w.hardwareRef);
+
+  const sig = await wAux.signMessage(MESSAGE);
+  const isValidSign = await CryptoUtils.recoverAndVerify(
+    MESSAGE,
+    sig,
+    w.publicKey
+  );
+
+  assert(isValidSign === true);
+
+  console.log("✅ [LOAD_WALLET]");
 };

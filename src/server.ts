@@ -1,12 +1,16 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export interface Store {
   save(key: string, value: any): void;
   get(key: string): any | null;
 }
 
-export class JsonStore implements Store {
+export class Server implements Store {
   private filePath: string;
   private db: Record<string, any>;
 

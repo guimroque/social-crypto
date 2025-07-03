@@ -6,8 +6,12 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "types": ["node"]
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
+    "outDir": "dist"
   },
-  "include": ["."]
+  "include": ["src/**/*.ts"],
+  "ts-node": {
+    "esm": true
+  }
 }

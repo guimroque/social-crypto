@@ -1,129 +1,146 @@
-import crypto, { subtle } from "crypto";
+import crypto from "crypto";
+import * as secp from "@noble/secp256k1";
+import { hmac } from "@noble/hashes/hmac.js";
+import { sha256 } from "@noble/hashes/sha256.js";
 
-/**
- * CryptoUtils provides key generation, message signing, verification,
- * and secure encryption of private keys using AES-256-GCM and PIN-based protection.
- */
+// Registers HMAC for deterministic signatures (RFC6979)
+secp.etc.hmacSha256Sync = (key, ...msgs) =>
+  hmac(sha256, key, secp.etc.concatBytes(...msgs));
+
 export class CryptoUtils {
   /**
-   * Generates an ECDSA P-256 key pair for digital signatures.
-   * @returns CryptoKeyPair containing the private and public keys.
+   * Generates a key pair in hex format.
+   * @returns Object containing privateKeyHex (32 bytes) and compressed publicKeyHex (33 bytes).
    */
-  static async generateKeyPair(): Promise<CryptoKeyPair> {
-    return await subtle.generateKey(
-      { name: "ECDSA", namedCurve: "P-256" },
-      true,
-      ["sign", "verify"]
-    );
+  static generateKeyPair(): { privateKeyHex: string; publicKeyHex: string } {
+    const privateKey = secp.utils.randomPrivateKey();
+    const publicKey = secp.getPublicKey(privateKey, true); // compressed
+    return {
+      privateKeyHex: Buffer.from(privateKey).toString("hex"),
+      publicKeyHex: Buffer.from(publicKey).toString("hex"),
+    };
   }
 
   /**
-   * Exports the public key from a CryptoKeyPair as a hexadecimal string.
-   * The public key is hashed using SHA-256 to create a unique identifier.
-   * @param pair The CryptoKeyPair containing the public key.
-   * @returns Hexadecimal string of the public key hash.
+   * Signs a message with a private key in hex format.
+   * @param message Plain text message.
+   * @param privateKeyHex Private key in hex format.
+   * @returns Object with signatureHex (r + s) and recovery bit (0 or 1).
    */
-  static async getPublicKeyFromPair(publicKey: CryptoKey): Promise<string> {
-    const key = await subtle.exportKey("spki", publicKey);
-    const digest = await subtle.digest("SHA-256", key);
-
-    return `0x${Buffer.from(digest).toString("hex")}`;
-  }
-
-  /**
-   * Digitally signs a message using a private key.
-   * @param message The message to sign.
-   * @param privateKey The private key used for signing.
-   * @returns Hexadecimal string of the digital signature.
-   */
-  static async signMessage(
+  static signMessage(
     message: string,
-    privateKey: CryptoKey
-  ): Promise<string> {
-    const enc = new TextEncoder();
-    const signature = await subtle.sign(
-      { name: "ECDSA", hash: "SHA-256" },
-      privateKey,
-      enc.encode(message)
-    );
-    return Buffer.from(signature).toString("hex");
+    privateKeyHex: string
+  ): { signatureHex: string; recovery: number } {
+    const msgHash = crypto.createHash("sha256").update(message).digest();
+    const priv = Buffer.from(privateKeyHex, "hex");
+    const sig = secp.sign(msgHash, priv); // synchronous, deterministic
+    const signatureHex = Buffer.from(sig.toBytes()).toString("hex");
+    return { signatureHex, recovery: sig.recovery };
   }
 
   /**
-   * Verifies if a signature matches a message and public key.
-   * @param message The original message.
-   * @param signatureHex The hexadecimal signature.
-   * @param publicKey The corresponding public key.
+   * Verifies an ECDSA signature using the original message and public key.
+   * @param message Plain text message.
+   * @param signatureHex Signature in hex format (r + s).
+   * @param publicKeyHex Compressed public key in hex format (33 bytes).
    * @returns True if valid, false otherwise.
    */
-  static async recoverAndVerify(
+  static verifySignature(
     message: string,
     signatureHex: string,
-    publicKey: CryptoKey
-  ): Promise<boolean> {
-    const enc = new TextEncoder();
-    const signature = Buffer.from(signatureHex, "hex");
-    return subtle.verify(
-      { name: "ECDSA", hash: "SHA-256" },
-      publicKey,
-      signature,
-      enc.encode(message)
-    );
+    publicKeyHex: string
+  ): boolean {
+    const msgHash = crypto.createHash("sha256").update(message).digest();
+    const signature = Uint8Array.from(Buffer.from(signatureHex, "hex"));
+    const pub = Uint8Array.from(Buffer.from(publicKeyHex, "hex"));
+    return secp.verify(signature, msgHash, pub);
   }
 
   /**
-   * Encrypts a private key buffer using AES-256-GCM and a PIN-derived key.
-   * @param privateKeyBuffer The exported private key (PKCS8 format).
-   * @param pin User PIN used to derive the symmetric key.
-   * @returns Hexadecimal encrypted string combining IV, tag, and ciphertext.
+   * Derives a compressed public key (33 bytes) from a private key in hex format.
+   * @param privateKeyHex Private key in hex format.
+   * @returns Compressed public key in hex format.
    */
-  static async encryptPrivateKey(
-    privateKeyBuffer: Buffer,
-    pin: string
-  ): Promise<string> {
+  static getPublicKey(privateKeyHex: string): string {
+    const priv = Uint8Array.from(Buffer.from(privateKeyHex, "hex"));
+    const pub = secp.getPublicKey(priv, true);
+    return Buffer.from(pub).toString("hex");
+  }
+
+  /**
+   * Performs ECDH key agreement to derive a shared secret.
+   * @param privateKeyHex Private key in hex format.
+   * @param publicKeyHex Compressed public key in hex format.
+   * @returns Shared secret in hex format.
+   */
+  static getSharedSecret(privateKeyHex: string, publicKeyHex: string): string {
+    const priv = Uint8Array.from(Buffer.from(privateKeyHex, "hex"));
+    const pub = Uint8Array.from(Buffer.from(publicKeyHex, "hex"));
+    const secret = secp.getSharedSecret(priv, pub);
+    return Buffer.from(secret).toString("hex");
+  }
+
+  /**
+   * Encrypts a private key buffer using a PIN with AES-256-GCM.
+   * @param privateKeyBuffer Private key as Buffer.
+   * @param pin String used to derive the symmetric key.
+   * @returns Encrypted private key in hex format (IV + TAG + Ciphertext).
+   */
+  static encryptPrivateKey(privateKeyBuffer: Buffer, pin: string): string {
     const iv = crypto.randomBytes(12);
     const key = crypto.createHash("sha256").update(pin).digest();
-
     const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
     const encrypted = Buffer.concat([
       cipher.update(privateKeyBuffer),
       cipher.final(),
     ]);
     const tag = cipher.getAuthTag();
-
     return Buffer.concat([iv, tag, encrypted]).toString("hex");
   }
 
   /**
-   * Decrypts a previously encrypted private key using the correct PIN.
-   * @param encryptedHex Hexadecimal encrypted private key.
-   * @param pin The PIN to derive the decryption key.
-   * @returns Re-imported CryptoKey for signing operations.
+   * Decrypts a previously encrypted private key using a PIN.
+   * @param encryptedHex Encrypted private key in hex format (IV + TAG + Ciphertext).
+   * @param pin String used to derive the symmetric key.
+   * @returns Decrypted private key as Buffer.
    */
   static async decryptPrivateKey(
     encryptedHex: string,
     pin: string
-  ): Promise<CryptoKey> {
+  ): Promise<Buffer> {
     const buf = Buffer.from(encryptedHex, "hex");
     const iv = buf.slice(0, 12);
     const tag = buf.slice(12, 28);
     const encrypted = buf.slice(28);
     const key = crypto.createHash("sha256").update(pin).digest();
-
     const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
     decipher.setAuthTag(tag);
+    return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+  }
 
-    const decrypted = Buffer.concat([
-      decipher.update(encrypted),
-      decipher.final(),
-    ]);
+  /**
+   * Recovers the compressed public key from a signed message.
+   * @param message Original plain text message.
+   * @param signatureHex Signature in hex format (r + s).
+   * @param recoveryBit Recovery bit (0 or 1).
+   * @returns Compressed public key in hex format.
+   * @throws Error if recovery fails or invalid signature.
+   */
+  static recoverPublicKeyHex(
+    message: string,
+    signatureHex: string,
+    recoveryBit: number
+  ): string {
+    const msgHash = crypto.createHash("sha256").update(message).digest();
+    const signature =
+      secp.Signature.fromCompact(signatureHex).addRecoveryBit(recoveryBit);
 
-    return subtle.importKey(
-      "pkcs8",
-      decrypted,
-      { name: "ECDSA", namedCurve: "P-256" },
-      true,
-      ["sign"]
-    );
+    if (!signature) {
+      throw new Error("Invalid signature format");
+    }
+
+    const pubBytes = signature.recoverPublicKey(msgHash).toRawBytes(true);
+
+    return Buffer.from(pubBytes).toString("hex");
   }
 }

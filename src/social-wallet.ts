@@ -1,62 +1,49 @@
-import { Vault, BakoProvider } from "bakosafe";
-import { CryptoUtils } from "./crypto";
-import { webcrypto } from "crypto";
+import { CryptoUtils } from "./crypto.js";
 import { randomUUID } from "crypto";
-import { JsonStore } from "./server";
-
-const { subtle } = webcrypto;
+import { Server } from "./server.js";
 
 export type WalletParams = {
   hardwareRef: string;
-  publicKeyB256: string;
-  privateKey: CryptoKey;
-  publicKey: CryptoKey;
+  publicKey: string;
+  encriptedPrivateKey: string;
 };
 
 export class Wallet {
   hardwareRef: string;
-  publicKeyB256: string;
-  publicKey: CryptoKey;
+  publicKey: string;
 
-  protected privateKey: CryptoKey;
+  private encryptedPrivateKey: string;
 
   protected constructor(params: WalletParams) {
     this.hardwareRef = params.hardwareRef;
-    this.publicKeyB256 = params.publicKeyB256;
     this.publicKey = params.publicKey;
-    this.privateKey = params.privateKey;
+    this.encryptedPrivateKey = params.encriptedPrivateKey;
   }
 
   static async create(pin: string): Promise<Wallet> {
-    // Generate a new key pair
-    const pair = await CryptoUtils.generateKeyPair();
+    const pair = CryptoUtils.generateKeyPair();
     const hardwareRef = randomUUID(); // Simulate hardware reference
 
-    // Store the private key securely using AES-256-GCM
-    const exportedPriv = await subtle.exportKey("pkcs8", pair.privateKey);
-    const exportedPublic = await subtle.exportKey("spki", pair.publicKey);
-    const encrypted = await CryptoUtils.encryptPrivateKey(
-      Buffer.from(exportedPriv),
+    const encrypted = CryptoUtils.encryptPrivateKey(
+      Buffer.from(pair.privateKeyHex, "hex"),
       pin
     );
 
-    const store = new JsonStore();
+    const store = new Server();
     store.save(hardwareRef, {
       encryptedPrivateKey: encrypted,
-      publicKeyb256: await CryptoUtils.getPublicKeyFromPair(pair.publicKey),
-      publicKeyHex: Buffer.from(exportedPublic).toString("hex"),
+      publicKey: pair.publicKeyHex,
     });
 
     return new Wallet({
       hardwareRef,
-      publicKeyB256: await CryptoUtils.getPublicKeyFromPair(pair.publicKey),
-      privateKey: pair.privateKey,
-      publicKey: pair.publicKey,
+      publicKey: pair.publicKeyHex,
+      encriptedPrivateKey: encrypted,
     });
   }
 
   static async load(pin: string, ref: string): Promise<Wallet> {
-    const store = new JsonStore();
+    const store = new Server();
     const walletData = store.get(ref);
 
     if (!walletData) {
@@ -67,19 +54,32 @@ export class Wallet {
       walletData.encryptedPrivateKey,
       pin
     );
+    const isValid =
+      CryptoUtils.getPublicKey(decryptedPrivateKey.toString("hex")) ===
+      walletData.publicKey;
+
+    if (!isValid) {
+      throw new Error("Decrypted private key does not match public key");
+    }
 
     return new Wallet({
       hardwareRef: ref,
-      publicKey: walletData,
-      privateKey: decryptedPrivateKey,
-      publicKeyB256: walletData.publicKeyb256,
+      publicKey: walletData.publicKey,
+      encriptedPrivateKey: walletData.encryptedPrivateKey,
     });
   }
 
-  async signMessage(message: string): Promise<string> {
-    if (!this.privateKey) {
-      throw new Error("Private key not available for signing");
-    }
-    return CryptoUtils.signMessage(message, this.privateKey);
+  async getPrivateKey(pin: string): Promise<string> {
+    const decryptedBuffer = await CryptoUtils.decryptPrivateKey(
+      this.encryptedPrivateKey,
+      pin
+    );
+    return decryptedBuffer.toString("hex");
+  }
+
+  async signMessage(message: string, pin: string): Promise<string> {
+    const privateKeyHex = await this.getPrivateKey(pin);
+    const { signatureHex } = CryptoUtils.signMessage(message, privateKeyHex);
+    return signatureHex;
   }
 }

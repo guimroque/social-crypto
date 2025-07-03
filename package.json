@@ -1,18 +1,21 @@
 {
   "name": "social-wallet",
+  "author": "Guilherme Roque",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "crypto": "ts-node src/main.ts"
+    "start": "tsc --noEmit && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/main.ts"
   },
-  "author": "Guilherme Roque",
   "devDependencies": {
-    "@types/node": "^20.4.3",
+    "@types/node": "^24.0.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@noble/hashes": "^1.8.0",
+    "@noble/secp256k1": "^2.3.0",
     "bakosafe": "^0.1.9"
   }
 }

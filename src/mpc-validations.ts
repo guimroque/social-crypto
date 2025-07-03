@@ -1,90 +1,123 @@
 import assert from "assert";
-import { webcrypto } from "crypto";
-const { subtle } = webcrypto;
-
-import { CryptoUtils } from "./crypto";
-import { Wallet } from "./social-wallet";
+import { CryptoUtils } from "./crypto.js";
+import { Wallet } from "./social-wallet.js";
 
 const MESSAGE = "hello message!";
 const PIN = "123456";
 
-export const validateKeyPair = async () => {
-  const pair = await CryptoUtils.generateKeyPair();
-  assert(pair.privateKey !== undefined);
-  assert(pair.publicKey !== undefined);
+export const validateKeyPair = () => {
+  const pair = CryptoUtils.generateKeyPair();
+  assert(pair.privateKeyHex !== undefined);
+  assert(pair.publicKeyHex !== undefined);
 
-  const sig = await CryptoUtils.signMessage(MESSAGE, pair.privateKey);
-  const isValidSign = await CryptoUtils.recoverAndVerify(
+  const { signatureHex, recovery } = CryptoUtils.signMessage(
     MESSAGE,
-    sig,
-    pair.publicKey
-  );
-  const notValidSign = await CryptoUtils.recoverAndVerify(
-    MESSAGE + "12",
-    sig,
-    pair.publicKey
+    pair.privateKeyHex
   );
 
-  assert(isValidSign === true);
-  assert(notValidSign === false);
+  const recoveredPub = CryptoUtils.recoverPublicKeyHex(
+    MESSAGE,
+    signatureHex,
+    recovery
+  );
 
-  console.log("✅ [KEY_PAR]");
+  assert(recoveredPub === pair.publicKeyHex);
+
+  const isValid = CryptoUtils.verifySignature(
+    MESSAGE,
+    signatureHex,
+    pair.publicKeyHex
+  );
+
+  assert(isValid === true);
+
+  const isInvalid = CryptoUtils.verifySignature(
+    MESSAGE + " altered",
+    signatureHex,
+    pair.publicKeyHex
+  );
+
+  assert(isInvalid === false);
+
+  console.log("✅ [KEY_PAIR]");
 };
 
-export const validateEncryptKey = async () => {
-  const pair = await CryptoUtils.generateKeyPair();
-  assert(pair.privateKey !== undefined);
-  assert(pair.publicKey !== undefined);
+export const validateEncryptionFlow = async () => {
+  const pair = CryptoUtils.generateKeyPair();
 
-  const sig = await CryptoUtils.signMessage(MESSAGE, pair.privateKey);
-  const isValidSign = await CryptoUtils.recoverAndVerify(
+  const { signatureHex } = CryptoUtils.signMessage(MESSAGE, pair.privateKeyHex);
+
+  const isValid = CryptoUtils.verifySignature(
     MESSAGE,
-    sig,
-    pair.publicKey
+    signatureHex,
+    pair.publicKeyHex
   );
 
-  assert(isValidSign === true);
+  assert(isValid === true);
 
-  const exportedPriv = await subtle.exportKey("pkcs8", pair.privateKey);
-  const encrypted = await CryptoUtils.encryptPrivateKey(
-    Buffer.from(exportedPriv),
-    PIN
-  );
+  const privBuffer = Buffer.from(pair.privateKeyHex, "hex");
+  const encrypted = CryptoUtils.encryptPrivateKey(privBuffer, PIN);
   assert(encrypted !== undefined);
-  const decrypted = await CryptoUtils.decryptPrivateKey(encrypted, PIN);
 
-  const signature = await CryptoUtils.signMessage(MESSAGE, decrypted);
+  const decryptedBuffer = await CryptoUtils.decryptPrivateKey(encrypted, PIN);
+  const decryptedHex = decryptedBuffer.toString("hex");
 
-  assert(signature !== undefined);
-  const rec = await CryptoUtils.recoverAndVerify(
+  assert(decryptedHex === pair.privateKeyHex);
+
+  const newSignature = CryptoUtils.signMessage(MESSAGE, decryptedHex);
+
+  const isValidNew = CryptoUtils.verifySignature(
+    MESSAGE,
+    newSignature.signatureHex,
+    pair.publicKeyHex
+  );
+
+  assert(isValidNew === true);
+
+  console.log("✅ [ENCRYPTION_FLOW]");
+};
+
+export const validateSignatureRecovery = async () => {
+  const pair = CryptoUtils.generateKeyPair();
+
+  const message = "hello message!";
+
+  const sig = CryptoUtils.signMessage(message, pair.privateKeyHex);
+
+  const publicKey = CryptoUtils.recoverPublicKeyHex(
+    message,
+    sig.signatureHex,
+    sig.recovery
+  );
+
+  assert(publicKey === pair.publicKeyHex);
+  console.log("✅ [RECOVER_FLOW]");
+};
+
+export const validateWalletFlow = async () => {
+  // Cria nova carteira
+  const wallet = await Wallet.create(PIN);
+
+  assert(wallet.hardwareRef !== undefined);
+  assert(wallet.publicKey !== undefined);
+
+  // Recupera a carteira do storage
+  const loadedWallet = await Wallet.load(PIN, wallet.hardwareRef);
+
+  assert(loadedWallet.hardwareRef === wallet.hardwareRef);
+  assert(loadedWallet.publicKey === wallet.publicKey);
+
+  // Assina mensagem
+  const signature = await loadedWallet.signMessage(MESSAGE, PIN);
+
+  // Valida assinatura
+  const isValid = CryptoUtils.verifySignature(
     MESSAGE,
     signature,
-    pair.publicKey
+    loadedWallet.publicKey
   );
 
-  assert(rec === true);
-  console.log("✅ [ENCRYPTION_KEY]");
-};
+  assert(isValid === true);
 
-export const validateSocialWallet = async () => {
-  const w = await Wallet.create(PIN);
-
-  assert(w.publicKey !== undefined);
-  assert(w.hardwareRef !== undefined);
-
-  const wAux = await Wallet.load(PIN, w.hardwareRef);
-
-  assert(wAux.publicKeyB256 === w.publicKeyB256);
-  assert(wAux.hardwareRef === w.hardwareRef);
-
-  const sig = await wAux.signMessage(MESSAGE);
-  const isValidSign = await CryptoUtils.recoverAndVerify(
-    MESSAGE,
-    sig,
-    w.publicKey
-  );
-
-  assert(isValidSign === true);
-
-  console.log("✅ [LOAD_WALLET]");
+  console.log("✅ [WALLET_FLOW]");
 };

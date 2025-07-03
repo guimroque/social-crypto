@@ -1,26 +1,15 @@
-// import { BakoProvider, Vault } from "bakosafe";
-// import { Provider } from "fuels";
-
 import {
-  validateEncryptKey,
+  validateEncryptionFlow,
   validateKeyPair,
-  validateSocialWallet,
-} from "./mpc-validations";
-
-// export interface SocialWallet {
-//   vault: Vault | null;
-//   key: CryptoKey | null;
-//   publicKeyHex: string | null;
-//   provider: BakoProvider | Provider;
-
-//   loadFromStore(pin: string): Promise<void>;
-//   signMessage(message: string): Promise<string>;
-// }
+  validateSignatureRecovery,
+  validateWalletFlow,
+} from "./mpc-validations.js";
 
 const main = async () => {
-  await validateKeyPair();
-  await validateEncryptKey();
-  await validateSocialWallet();
+  validateKeyPair();
+  await validateEncryptionFlow();
+  await validateSignatureRecovery();
+  await validateWalletFlow();
 };
 
 main();

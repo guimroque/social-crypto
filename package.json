@@ -6,7 +6,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc --noEmit && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/main.ts"
+    "start": "tsc --noEmit && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/main.ts",
+    "predicate": "chmod +x scripts/build-and-deploy.sh && scripts/build-and-deploy.sh"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
@@ -16,6 +17,8 @@
   "dependencies": {
     "@noble/hashes": "^1.8.0",
     "@noble/secp256k1": "^2.3.0",
-    "bakosafe": "^0.1.9"
+    "bakosafe": "^0.1.9",
+    "dotenv": "^17.0.1",
+    "fuels": "^0.101.2"
   }
 }

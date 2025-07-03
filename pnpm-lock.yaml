@@ -17,6 +17,12 @@ importers:
       bakosafe:
         specifier: ^0.1.9
         version: 0.1.9(fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10)))
+      dotenv:
+        specifier: ^17.0.1
+        version: 17.0.1
+      fuels:
+        specifier: ^0.101.2
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
     devDependencies:
       '@types/node':
         specifier: ^24.0.10
@@ -758,6 +764,10 @@ packages:
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
+
+  dotenv@17.0.1:
+    resolution: {integrity: sha512-GLjkduuAL7IMJg/ZnOPm9AnWKJ82mSE2tzXLaJ/6hD6DhwGfZaXG77oB8qbReyiczNxnbxQKyh0OE5mXq0bAHA==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -1958,6 +1968,8 @@ snapshots:
   delayed-stream@1.0.0: {}
 
   diff@4.0.2: {}
+
+  dotenv@17.0.1: {}
 
   dunder-proto@1.0.1:
     dependencies:

@@ -1,15 +1,9 @@
 import { launchTestNode } from "fuels/test-utils";
 import assert from "assert";
 import { CryptoUtils } from "./crypto";
+import { bakoCoder, SignatureType, Vault } from "bakosafe";
+import { Address, bn, hashMessage, Signer } from "fuels";
 import { Wallet } from "./social-wallet";
-import { bn, hexlify } from "fuels";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-import { Script } from "./airfacts/scripts/Script";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const MESSAGE = "hello message!";
 const PIN = "123456";
@@ -103,34 +97,6 @@ export const validateSignatureRecovery = async () => {
   console.log("✅ [RECOVER_FLOW]");
 };
 
-export const validateWalletFlow = async () => {
-  // Cria nova carteira
-  const wallet = await Wallet.create(PIN);
-
-  assert(wallet.hardwareRef !== undefined);
-  assert(wallet.publicKey !== undefined);
-
-  // Recupera a carteira do storage
-  const loadedWallet = await Wallet.load(PIN, wallet.hardwareRef);
-
-  assert(loadedWallet.hardwareRef === wallet.hardwareRef);
-  assert(loadedWallet.publicKey === wallet.publicKey);
-
-  // Assina mensagem
-  const signature = await loadedWallet.signMessage(MESSAGE, PIN);
-
-  // Valida assinatura
-  const isValid = CryptoUtils.verifySignature(
-    MESSAGE,
-    signature,
-    loadedWallet.publicKey
-  );
-
-  assert(isValid === true);
-
-  console.log("✅ [WALLET_FLOW]");
-};
-
 export const validateScript = async () => {
   try {
     let node = await launchTestNode();
@@ -138,37 +104,54 @@ export const validateScript = async () => {
       wallets: [wallet],
       provider,
     } = node;
-    const s_wallet = await Wallet.create(PIN);
-    const chainId = await provider.getChainId();
+    const hash = Address.fromRandom().toB256();
 
-    // Carrega o bytecode do script
-    const script = new Script(wallet);
+    const w = await Wallet.create(PIN, provider);
 
-    const tx = await script.functions.main().getTransactionRequest();
-    tx.addWitness(hexlify(new Uint8Array(64).fill(1)));
+    const sig = await w.signMessage(hash, PIN);
+    const rec = Signer.recoverAddress(hashMessage(hash), sig);
 
-    const { assembledRequest } = await provider.assembleTx({
-      request: tx,
-      feePayerAccount: wallet,
-      reserveGas: bn(100_000),
-    });
+    // console.log("[DATA]: ", {
+    //   sig,
+    //   hash,
+    //   rec: rec.b256Address,
+    //   public: w.publicKey,
+    // });
 
-    const signature = `0x${await s_wallet.signMessage(
-      tx.getTransactionId(chainId),
-      PIN
-    )}`;
+    assert(w.publicKey === rec.b256Address);
 
-    tx.witnesses[0] = signature;
+    // const vault = new Vault(provider, {
+    //   SIGNATURES_COUNT: 1,
+    //   SIGNERS: [w_social.publicKey],
+    // });
+    // await wallet
+    //   .transfer(vault.address, bn.parseUnits("0.1"))
+    //   .then(async (t) => {
+    //     await t.waitForResult();
+    //   });
 
-    // Envia a transação
-    const txS = await wallet.sendTransaction(assembledRequest);
-    const txRes = await txS.waitForResult();
+    // const { tx, hashTxId } = await vault.transaction({
+    //   name: "teste",
+    //   assets: [
+    //     {
+    //       to: wallet.address.b256Address,
+    //       amount: "0.001",
+    //       assetId: await provider.getBaseAssetId(),
+    //     },
+    //   ],
+    // });
 
-    console.log({
-      w: tx.witnesses[0],
-      id: tx.getTransactionId(chainId),
-    });
-    console.log(txRes.logs);
+    // const sig = await w_social.signMessage(hashTxId, PIN);
+    // tx.witnesses = bakoCoder.encode([
+    //   {
+    //     type: SignatureType.Fuel,
+    //     signature: `0x${sig}`,
+    //   },
+    // ]);
+
+    // const res = await vault.send(tx);
+    // const r = await res.waitForResult();
+    // console.log(r);
 
     node.cleanup();
   } catch (e) {

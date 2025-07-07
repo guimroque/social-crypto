@@ -2,6 +2,7 @@ import crypto from "crypto";
 import * as secp from "@noble/secp256k1";
 import { hmac } from "@noble/hashes/hmac.js";
 import { sha256 } from "@noble/hashes/sha256.js";
+import { keccak_256 } from "@noble/hashes/sha3";
 
 // Registers HMAC for deterministic signatures (RFC6979)
 secp.etc.hmacSha256Sync = (key, ...msgs) =>
@@ -38,6 +39,31 @@ export class CryptoUtils {
     return { signatureHex, recovery: sig.recovery };
   }
 
+  static signMessageForFuel(
+    message: string,
+    privateKeyHex: string
+  ): { fullSignatureHex: string; messageHashHex: string } {
+    const msgHash = keccak_256(Buffer.from(message));
+    const priv = Buffer.from(privateKeyHex, "hex");
+
+    const sig = secp.sign(msgHash, priv);
+
+    const signatureHex = Buffer.from(sig.toCompactRawBytes()).toString("hex");
+    const recovery = sig.recovery;
+
+    const fullSignature = Buffer.concat([
+      Buffer.from(signatureHex, "hex"),
+      Buffer.from([recovery]),
+    ]);
+
+    console.log(fullSignature.toString("hex"));
+
+    return {
+      fullSignatureHex: `0x${fullSignature.toString("hex")}`,
+      messageHashHex: Buffer.from(msgHash).toString("hex"),
+    };
+  }
+
   /**
    * Verifies an ECDSA signature using the original message and public key.
    * @param message Plain text message.
@@ -63,8 +89,8 @@ export class CryptoUtils {
    */
   static getPublicKey(privateKeyHex: string): string {
     const priv = Uint8Array.from(Buffer.from(privateKeyHex, "hex"));
-    const pub = secp.getPublicKey(priv, true);
-    return Buffer.from(pub).toString("hex");
+    const pub = secp.getPublicKey(priv, false); // uncompressed
+    return `0x${Buffer.from(pub).toString("hex")}`;
   }
 
   /**
@@ -108,13 +134,16 @@ export class CryptoUtils {
     encryptedHex: string,
     pin: string
   ): Promise<Buffer> {
+    console.log("[DECIPT]");
     const buf = Buffer.from(encryptedHex, "hex");
     const iv = buf.slice(0, 12);
     const tag = buf.slice(12, 28);
     const encrypted = buf.slice(28);
     const key = crypto.createHash("sha256").update(pin).digest();
     const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
+    console.log("[DECIPT_1]");
     decipher.setAuthTag(tag);
+    console.log("[DECIPT_2]");
     return Buffer.concat([decipher.update(encrypted), decipher.final()]);
   }
 

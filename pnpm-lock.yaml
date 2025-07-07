@@ -8,6 +8,24 @@ importers:
 
   .:
     dependencies:
+      '@fuel-ts/address':
+        specifier: ^0.101.2
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/crypto':
+        specifier: ^0.101.2
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher':
+        specifier: ^0.101.2
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/math':
+        specifier: ^0.101.2
+        version: 0.101.2
+      '@fuel-ts/utils':
+        specifier: ^0.101.2
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@noble/curves':
+        specifier: ^1.9.2
+        version: 1.9.2
       '@noble/hashes':
         specifier: ^1.8.0
         version: 1.8.0

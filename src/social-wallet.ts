@@ -1,6 +1,6 @@
-import { CryptoUtils } from "./crypto.js";
+import { CryptoUtils } from "./crypto";
 import { randomUUID } from "crypto";
-import { Server } from "./server.js";
+import { Server } from "./server";
 
 export type WalletParams = {
   hardwareRef: string;

@@ -2,16 +2,16 @@
   "name": "social-wallet",
   "author": "Guilherme Roque",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc --noEmit && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/main.ts",
-    "predicate": "chmod +x scripts/build-and-deploy.sh && scripts/build-and-deploy.sh"
+    "build": "tsup src/main.ts --format esm --out-dir dist",
+    "start": "node dist/main.js",
+    "dev": "pnpm fuels build && pnpm run build && pnpm start"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {

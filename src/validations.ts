@@ -1,6 +1,15 @@
+import { launchTestNode } from "fuels/test-utils";
 import assert from "assert";
-import { CryptoUtils } from "./crypto.js";
-import { Wallet } from "./social-wallet.js";
+import { CryptoUtils } from "./crypto";
+import { Wallet } from "./social-wallet";
+import { bn, hexlify } from "fuels";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { Script } from "./airfacts/scripts/Script";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const MESSAGE = "hello message!";
 const PIN = "123456";
@@ -120,4 +129,50 @@ export const validateWalletFlow = async () => {
   assert(isValid === true);
 
   console.log("✅ [WALLET_FLOW]");
+};
+
+export const validateScript = async () => {
+  try {
+    let node = await launchTestNode();
+    const {
+      wallets: [wallet],
+      provider,
+    } = node;
+    const s_wallet = await Wallet.create(PIN);
+    const chainId = await provider.getChainId();
+
+    // Carrega o bytecode do script
+    const script = new Script(wallet);
+
+    const tx = await script.functions.main().getTransactionRequest();
+    tx.addWitness(hexlify(new Uint8Array(64).fill(1)));
+
+    const { assembledRequest } = await provider.assembleTx({
+      request: tx,
+      feePayerAccount: wallet,
+      reserveGas: bn(100_000),
+    });
+
+    const signature = `0x${await s_wallet.signMessage(
+      tx.getTransactionId(chainId),
+      PIN
+    )}`;
+
+    tx.witnesses[0] = signature;
+
+    // Envia a transação
+    const txS = await wallet.sendTransaction(assembledRequest);
+    const txRes = await txS.waitForResult();
+
+    console.log({
+      w: tx.witnesses[0],
+      id: tx.getTransactionId(chainId),
+    });
+    console.log(txRes.logs);
+
+    node.cleanup();
+  } catch (e) {
+    console.error("❌ [SCRIPT_FLOW]", e);
+    throw e;
+  }
 };

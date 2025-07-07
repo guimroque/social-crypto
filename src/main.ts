@@ -3,13 +3,15 @@ import {
   validateKeyPair,
   validateSignatureRecovery,
   validateWalletFlow,
-} from "./mpc-validations.js";
+  validateScript,
+} from "./validations";
 
 const main = async () => {
   validateKeyPair();
   await validateEncryptionFlow();
   await validateSignatureRecovery();
   await validateWalletFlow();
+  await validateScript();
 };
 
 main();

@@ -1,17 +1,9 @@
-import {
-  validateEncryptionFlow,
-  validateKeyPair,
-  validateSignatureRecovery,
-  // validateWalletFlow,
-  validateScript,
-} from "./validations";
+import "./load-env";
+import { validateSignature, validateWallet } from "./validations";
 
 const main = async () => {
-  validateKeyPair();
-  await validateEncryptionFlow();
-  await validateSignatureRecovery();
-  // await validateWalletFlow();
-  await validateScript();
+  await validateSignature();
+  await validateWallet();
 };
 
 main();

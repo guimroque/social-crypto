@@ -1,9 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { resolve } from "path";
 
 export interface Store {
   save(key: string, value: any): void;
@@ -15,7 +11,7 @@ export class Server implements Store {
   private db: Record<string, any>;
 
   constructor(fileName = "store.json") {
-    this.filePath = resolve(__dirname, fileName);
+    this.filePath = resolve(process.cwd(), "src", fileName);
 
     if (existsSync(this.filePath)) {
       const content = readFileSync(this.filePath, "utf-8");

@@ -2,14 +2,20 @@ import { randomUUID } from "crypto";
 import { Server } from "./server";
 import {
   Address,
-  assert,
+  BigNumberish,
+  BN,
+  BytesLike,
   decrypt,
   encrypt,
-  Keystore,
+  GetBalancesResponse,
+  hexlify,
   Provider,
+  TransactionRequestLike,
+  TransactionResponse,
+  TxParamsType,
   WalletUnlocked,
 } from "fuels";
-import { Vault } from "bakosafe";
+import { bakoCoder, SignatureType, Vault } from "bakosafe";
 
 export type WalletParams = {
   hardwareRef: string;
@@ -49,6 +55,7 @@ export class Wallet {
       encryptedPrivateKey: encrypted,
       publicKey: wallet.publicKey,
       bakoAddress: vault.address.toB256(),
+      datetime: new Date().getTime(),
     });
 
     return new Wallet({
@@ -90,7 +97,56 @@ export class Wallet {
     });
   }
 
-  async signMessage(message: string, pin: string): Promise<string> {
+  get socialAddress(): string {
+    return this.vault.address.toB256();
+  }
+
+  async balance(): Promise<GetBalancesResponse> {
+    return await this.vault.getBalances();
+  }
+
+  async signMessage(message: string, pin?: string): Promise<string> {
     return await this.wallet.signMessage(message);
+  }
+
+  async sendTransaction(
+    _address: string,
+    _transaction: TransactionRequestLike
+  ) {
+    const { tx, hashTxId } = await this.vault.BakoTransfer(_transaction);
+    const signature = await this.signMessage(hashTxId);
+    tx.witnesses = bakoCoder.encode([{ signature, type: SignatureType.Fuel }]);
+
+    return await this.vault.send(tx);
+  }
+
+  async transfer(
+    address: string,
+    amount: BigNumberish,
+    assetId?: BytesLike
+  ): Promise<TransactionResponse> {
+    const { tx, hashTxId } = await this.vault.transaction({
+      name: randomUUID(),
+      assets: [
+        {
+          amount: new BN(amount.toString()).formatUnits(),
+          assetId: assetId
+            ? hexlify(assetId)
+            : await this.vault.provider.getBaseAssetId(),
+          to: address,
+        },
+      ],
+    });
+
+    const signature = await this.signMessage(hashTxId);
+
+    tx.witnesses = bakoCoder.encode([
+      {
+        signature,
+        type: SignatureType.Fuel,
+      },
+    ]);
+
+    return await this.vault.send(tx);
   }
 }

@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 dist/
 src/store.json
+
+/bako-safe

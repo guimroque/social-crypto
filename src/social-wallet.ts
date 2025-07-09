@@ -12,7 +12,6 @@ import {
   Provider,
   TransactionRequestLike,
   TransactionResponse,
-  TxParamsType,
   WalletUnlocked,
 } from "fuels";
 import { bakoCoder, SignatureType, Vault } from "bakosafe";

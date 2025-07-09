@@ -10,19 +10,19 @@ importers:
     dependencies:
       '@fuel-ts/address':
         specifier: ^0.101.2
-        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/crypto':
         specifier: ^0.101.2
-        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/hasher':
         specifier: ^0.101.2
-        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math':
         specifier: ^0.101.2
         version: 0.101.2
       '@fuel-ts/utils':
         specifier: ^0.101.2
-        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@noble/curves':
         specifier: ^1.9.2
         version: 1.9.2
@@ -34,13 +34,16 @@ importers:
         version: 2.3.0
       bakosafe:
         specifier: ^0.1.9
-        version: 0.1.9(fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10)))
+        version: 0.1.9(fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3)))
       dotenv:
         specifier: ^17.0.1
         version: 17.0.1
       fuels:
         specifier: ^0.101.2
-        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+        version: 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      redis:
+        specifier: ^5.6.0
+        version: 5.6.0
     devDependencies:
       '@types/node':
         specifier: ^24.0.10
@@ -50,7 +53,10 @@ importers:
         version: 10.9.2(@types/node@24.0.10)(typescript@5.8.3)
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(postcss@8.5.6)(typescript@5.8.3)
+        version: 8.5.0(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)
+      tsx:
+        specifier: ^4.20.3
+        version: 4.20.3
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -480,6 +486,34 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
+  '@redis/bloom@5.6.0':
+    resolution: {integrity: sha512-l13/d6BaZDJzogzZJEphIeZ8J0hpQpjkMiozomTm6nJiMNYkoPsNOBOOQua4QsG0fFjyPmLMDJFPAp5FBQtTXg==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.6.0
+
+  '@redis/client@5.6.0':
+    resolution: {integrity: sha512-wmP9kCFElCSr4MM4+1E4VckDuN4wLtiXSM/J0rKVQppajxQhowci89RGZr2OdLualowb8SRJ/R6OjsXrn9ZNFA==}
+    engines: {node: '>= 18'}
+
+  '@redis/json@5.6.0':
+    resolution: {integrity: sha512-YQN9ZqaSDpdLfJqwzcF4WeuJMGru/h4WsV7GeeNtXsSeyQjHTyDxrd48xXfRRJGv7HitA7zGnzdHplNeKOgrZA==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.6.0
+
+  '@redis/search@5.6.0':
+    resolution: {integrity: sha512-sLgQl92EyMVNHtri5K8Q0j2xt9c0cO9HYurXz667Un4xeUYR+B/Dw5lLG35yqO7VvVxb9amHJo9sAWumkKZYwA==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.6.0
+
+  '@redis/time-series@5.6.0':
+    resolution: {integrity: sha512-tXABmN1vu4aTNL3WI4Iolpvx/5jgil2Bs31ozvKblT+jkUoRkk8ykmYo9Pv/Mp7Gk6/Qkr/2rMgVminrt/4BBQ==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.6.0
+
   '@rollup/rollup-android-arm-eabi@4.44.1':
     resolution: {integrity: sha512-JAcBr1+fgqx20m7Fwe1DxPUl/hPkee6jA6Pl7n1v2EFiktAHenTaXl5aIFjUIEsfn9w3HE4gK1lEgNGMzBDs1w==}
     cpu: [arm]
@@ -741,6 +775,10 @@ packages:
     resolution: {integrity: sha512-IqLQi4lO0nIB4tcdTpN4LCB9FI3uqrJZK7RC515EnhZ6qBaglkIgICb1wjeAqpdoOabm1+SuQtkXIPdYC93jhQ==}
     engines: {node: '>= 0.2.0'}
 
+  cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
+    engines: {node: '>=0.10.0'}
+
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
@@ -922,6 +960,9 @@ packages:
   get-proto@1.0.1:
     resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
     engines: {node: '>= 0.4'}
+
+  get-tsconfig@4.10.1:
+    resolution: {integrity: sha512-auHyJ4AgMz7vgS8Hp3N6HXSmlMdUyhSUrfBF16w153rxtLIEOE+HGqaBppczZvnHLqQJfiHotCYpNhl0lUROFQ==}
 
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -1182,9 +1223,16 @@ packages:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
 
+  redis@5.6.0:
+    resolution: {integrity: sha512-0x3pM3SlYA5azdNwO8qgfMBzoOqSqr9M+sd1hojbcn0ZDM5zsmKeMM+zpTp6LIY+mbQomIc/RTTQKuBzr8QKzQ==}
+    engines: {node: '>= 18'}
+
   resolve-from@5.0.0:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
     engines: {node: '>=8'}
+
+  resolve-pkg-maps@1.0.0:
+    resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
   rimraf@5.0.10:
     resolution: {integrity: sha512-l0OE8wL34P4nJH/H2ffoaniAokM2qSmrtXHmlpvYr5AVVX8msAyW0l8NVJFDxlSK4u3Uh/f41cQheDVdnYijwQ==}
@@ -1343,6 +1391,11 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  tsx@4.20.3:
+    resolution: {integrity: sha512-qjbnuR9Tr+FJOMBqJCW5ehvIo/buZq7vH7qD7JziU98h6l3qGy0a/yPFjwO+y0/T7GFpNgNAvEcPPVfyT8rrPQ==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   type-fest@2.19.0:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
@@ -1644,21 +1697,21 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@fuel-ts/abi-coder@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/abi-coder@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       type-fest: 4.34.1
     transitivePeerDependencies:
       - vitest
 
-  '@fuel-ts/abi-typegen@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/abi-typegen@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/versions': 0.101.2
       commander: 13.1.0
       glob: 10.4.5
@@ -1669,17 +1722,17 @@ snapshots:
     transitivePeerDependencies:
       - vitest
 
-  '@fuel-ts/account@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/account@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/merkle': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/merkle': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/versions': 0.101.2
       '@fuels/vm-asm': 0.60.2
       '@noble/curves': 1.8.1
@@ -1692,37 +1745,37 @@ snapshots:
       - encoding
       - vitest
 
-  '@fuel-ts/address@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/address@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@noble/hashes': 1.7.1
     transitivePeerDependencies:
       - vitest
 
-  '@fuel-ts/contract@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/contract@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/merkle': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/merkle': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuels/vm-asm': 0.60.2
       ramda: 0.30.1
     transitivePeerDependencies:
       - encoding
       - vitest
 
-  '@fuel-ts/crypto@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/crypto@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@noble/hashes': 1.7.1
     transitivePeerDependencies:
       - vitest
@@ -1731,10 +1784,10 @@ snapshots:
     dependencies:
       '@fuel-ts/versions': 0.101.2
 
-  '@fuel-ts/hasher@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/hasher@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@noble/hashes': 1.7.1
     transitivePeerDependencies:
       - vitest
@@ -1745,73 +1798,73 @@ snapshots:
       '@types/bn.js': 5.1.6
       bn.js: 5.2.1
 
-  '@fuel-ts/merkle@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/merkle@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math': 0.101.2
     transitivePeerDependencies:
       - vitest
 
-  '@fuel-ts/program@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/program@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuels/vm-asm': 0.60.2
       ramda: 0.30.1
     transitivePeerDependencies:
       - encoding
       - vitest
 
-  '@fuel-ts/recipes@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/recipes@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/abi-typegen': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/contract': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/abi-typegen': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/contract': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
     transitivePeerDependencies:
       - encoding
       - vitest
 
-  '@fuel-ts/script@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/script@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
     transitivePeerDependencies:
       - encoding
       - vitest
 
-  '@fuel-ts/transactions@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/transactions@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
     transitivePeerDependencies:
       - vitest
 
-  '@fuel-ts/utils@0.101.2(vitest@3.0.9(@types/node@24.0.10))':
+  '@fuel-ts/utils@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
       '@fuel-ts/errors': 0.101.2
       '@fuel-ts/math': 0.101.2
       '@fuel-ts/versions': 0.101.2
       fflate: 0.8.2
-      vitest: 3.0.9(@types/node@24.0.10)
+      vitest: 3.0.9(@types/node@24.0.10)(tsx@4.20.3)
 
   '@fuel-ts/versions@0.101.2':
     dependencies:
@@ -1868,6 +1921,26 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@redis/bloom@5.6.0(@redis/client@5.6.0)':
+    dependencies:
+      '@redis/client': 5.6.0
+
+  '@redis/client@5.6.0':
+    dependencies:
+      cluster-key-slot: 1.1.2
+
+  '@redis/json@5.6.0(@redis/client@5.6.0)':
+    dependencies:
+      '@redis/client': 5.6.0
+
+  '@redis/search@5.6.0(@redis/client@5.6.0)':
+    dependencies:
+      '@redis/client': 5.6.0
+
+  '@redis/time-series@5.6.0(@redis/client@5.6.0)':
+    dependencies:
+      '@redis/client': 5.6.0
 
   '@rollup/rollup-android-arm-eabi@4.44.1':
     optional: true
@@ -1954,13 +2027,13 @@ snapshots:
       chai: 5.2.0
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.0.9(vite@6.3.5(@types/node@24.0.10))':
+  '@vitest/mocker@3.0.9(vite@6.3.5(@types/node@24.0.10)(tsx@4.20.3))':
     dependencies:
       '@vitest/spy': 3.0.9
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 6.3.5(@types/node@24.0.10)
+      vite: 6.3.5(@types/node@24.0.10)(tsx@4.20.3)
 
   '@vitest/pretty-format@3.0.9':
     dependencies:
@@ -2032,11 +2105,11 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  bakosafe@0.1.9(fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10))):
+  bakosafe@0.1.9(fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))):
     dependencies:
       '@noble/curves': 1.9.2
       axios: 1.10.0
-      fuels: 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      fuels: 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       uuid: 9.0.1
     transitivePeerDependencies:
       - debug
@@ -2106,6 +2179,8 @@ snapshots:
   cli-table@0.3.11:
     dependencies:
       colors: 1.0.3
+
+  cluster-key-slot@1.1.2: {}
 
   color-convert@2.0.1:
     dependencies:
@@ -2284,22 +2359,22 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10)):
+  fuels@0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3)):
     dependencies:
-      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/abi-typegen': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/contract': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/abi-coder': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/abi-typegen': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/account': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/address': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/contract': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/crypto': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/errors': 0.101.2
-      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/hasher': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/math': 0.101.2
-      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/recipes': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/script': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
-      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10))
+      '@fuel-ts/program': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/recipes': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/script': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/transactions': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
+      '@fuel-ts/utils': 0.101.2(vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3))
       '@fuel-ts/versions': 0.101.2
       '@fuels/vm-asm': 0.60.2
       bundle-require: 5.1.0(esbuild@0.25.2)
@@ -2339,6 +2414,10 @@ snapshots:
     dependencies:
       dunder-proto: 1.0.1
       es-object-atoms: 1.1.1
+
+  get-tsconfig@4.10.1:
+    dependencies:
+      resolve-pkg-maps: 1.0.0
 
   glob-parent@5.1.2:
     dependencies:
@@ -2521,11 +2600,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  postcss-load-config@6.0.1(postcss@8.5.6):
+  postcss-load-config@6.0.1(postcss@8.5.6)(tsx@4.20.3):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       postcss: 8.5.6
+      tsx: 4.20.3
 
   postcss@8.5.6:
     dependencies:
@@ -2547,7 +2627,17 @@ snapshots:
 
   readdirp@4.1.2: {}
 
+  redis@5.6.0:
+    dependencies:
+      '@redis/bloom': 5.6.0(@redis/client@5.6.0)
+      '@redis/client': 5.6.0
+      '@redis/json': 5.6.0(@redis/client@5.6.0)
+      '@redis/search': 5.6.0(@redis/client@5.6.0)
+      '@redis/time-series': 5.6.0(@redis/client@5.6.0)
+
   resolve-from@5.0.0: {}
+
+  resolve-pkg-maps@1.0.0: {}
 
   rimraf@5.0.10:
     dependencies:
@@ -2698,7 +2788,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.0(postcss@8.5.6)(typescript@5.8.3):
+  tsup@8.5.0(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.5)
       cac: 6.7.14
@@ -2709,7 +2799,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.6)
+      postcss-load-config: 6.0.1(postcss@8.5.6)(tsx@4.20.3)
       resolve-from: 5.0.0
       rollup: 4.44.1
       source-map: 0.8.0-beta.0
@@ -2725,6 +2815,13 @@ snapshots:
       - supports-color
       - tsx
       - yaml
+
+  tsx@4.20.3:
+    dependencies:
+      esbuild: 0.25.5
+      get-tsconfig: 4.10.1
+    optionalDependencies:
+      fsevents: 2.3.3
 
   type-fest@2.19.0: {}
 
@@ -2742,13 +2839,13 @@ snapshots:
 
   v8-compile-cache-lib@3.0.1: {}
 
-  vite-node@3.0.9(@types/node@24.0.10):
+  vite-node@3.0.9(@types/node@24.0.10)(tsx@4.20.3):
     dependencies:
       cac: 6.7.14
       debug: 4.4.1
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 6.3.5(@types/node@24.0.10)
+      vite: 6.3.5(@types/node@24.0.10)(tsx@4.20.3)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -2763,7 +2860,7 @@ snapshots:
       - tsx
       - yaml
 
-  vite@6.3.5(@types/node@24.0.10):
+  vite@6.3.5(@types/node@24.0.10)(tsx@4.20.3):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
@@ -2774,11 +2871,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.0.10
       fsevents: 2.3.3
+      tsx: 4.20.3
 
-  vitest@3.0.9(@types/node@24.0.10):
+  vitest@3.0.9(@types/node@24.0.10)(tsx@4.20.3):
     dependencies:
       '@vitest/expect': 3.0.9
-      '@vitest/mocker': 3.0.9(vite@6.3.5(@types/node@24.0.10))
+      '@vitest/mocker': 3.0.9(vite@6.3.5(@types/node@24.0.10)(tsx@4.20.3))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.0.9
       '@vitest/snapshot': 3.0.9
@@ -2794,8 +2892,8 @@ snapshots:
       tinyexec: 0.3.2
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 6.3.5(@types/node@24.0.10)
-      vite-node: 3.0.9(@types/node@24.0.10)
+      vite: 6.3.5(@types/node@24.0.10)(tsx@4.20.3)
+      vite-node: 3.0.9(@types/node@24.0.10)(tsx@4.20.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.0.10

@@ -1,0 +1,12 @@
+# Dockerfile dedicado para rodar apenas o JSON-RPC Server
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
+
+COPY . .
+
+# Comando para rodar apenas o JSON-RPC server
+CMD ["pnpm", "exec", "tsx", "src/comms/jsonrpc-server.ts"] 

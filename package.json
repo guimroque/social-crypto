@@ -8,7 +8,8 @@
     "start": "node dist/main.js",
     "dev": "pnpm run build && pnpm start",
     "redis": "docker build -f Dockerfile.redis -t social-redis . && docker run -d -p 6379:6379 --name social-redis social-redis",
-    "test": "tsx --test src/**/*.test.ts"
+    "test": "tsx --test src/**/*.test.ts",
+    "mpc": "tsx src/mpc.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
